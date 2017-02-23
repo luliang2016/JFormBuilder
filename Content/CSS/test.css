@@ -1,0 +1,14 @@
+.container {
+  margin-top: 40px; }
+  .container #form-builder-area {
+    padding: 10px;
+    min-width: 400px;
+    min-height: 600px;
+    border: 1px dotted grey; }
+  .container #form-field {
+    list-style: none; }
+
+.form-field {
+  margin-bottom: 10px;
+  width: 60px;
+  height: 60px; }
