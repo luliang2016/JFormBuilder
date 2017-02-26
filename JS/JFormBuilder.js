@@ -1,17 +1,16 @@
 (function($){
   $.widget("JFormBuilder.formBuilder",{
-    options:{
-      fields:["input","button"],
-      attributes:[]
+
+    options = {
+
     },
 
-    // ====== helper function ======
+    // ====== Helper functions ======
 
-    _create: function(){
-      console.log(this.options.newField);
-      console.log(this.options.fields);
+    _create = function(){
+
     },
 
-    // ====== end helper function ======
+    // ====== Helper functions end ======
   })
 }(jQuery))
