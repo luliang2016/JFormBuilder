@@ -2,6 +2,7 @@
   $.widget("JFormBuilder.formBuilder",{
 
     attributes: {},
+    fields: {},
 
     options: {
 
@@ -11,6 +12,7 @@
 
     _create: function(){
       this._prepareAttributes();
+      this._prepareFields();
     },
 
     /**
@@ -43,6 +45,7 @@
     */
     _attributeFactory: function(attributeType){
       if (this.attributes.hasOwnProperty(attributeType)) {
+        // Clone attribute object
         return $.extend(true,{},this.attributes[attributeType]);
       }
       return null;
@@ -57,45 +60,51 @@
 
     _initDefaultAttributes: function(){
       this.attributes.required = {
-        type: "required",
+        attributeType: "required",
         renderType: "checkbox",
         labelName: "Required",
         isActive: true
       };
       this.attributes.value = {
-        type: "value",
+        attributeType: "value",
         renderType: "text",
         labelName: "Value",
         isActive: true
       };
       this.attributes.placeholder = {
-        type: "placeholder",
+        attributeType: "placeholder",
         renderType: "text",
         labelName: "Placeholder",
         isActive: true
       };
       this.attributes.maxlength = {
-        type: "maxlength",
+        attributeType: "maxlength",
         renderType: "number",
         labelName: "Max Length",
         isActive: true
       };
       this.attributes.max = {
-        type: "max",
+        attributeType: "max",
         renderType: "number",
         labelName: "Max Number",
         isActive: true
       };
       this.attributes.min = {
-        type: "min",
+        attributeType: "min",
         renderType: "number",
         labelName: "Min Number",
         isActive: true
       };
       this.attributes.help = {
-        type: "help",
+        attributeType: "help",
         renderType: "text",
         labelName: "Help Text",
+        isActive: true
+      };
+      this.attributes.options = {
+        attributeType: "options",
+        renderType: "list",
+        labelName: "Options",
         isActive: true
       };
     },
@@ -118,14 +127,53 @@
       Prepare fields
     */
     _prepareFields: function(){
-      
+      this._initDefaultFields();
+      var overriderFieldObj = {};
+      if (this.options.hasOwnProperty("fields") && !this._isEmptyObject(this.options.fields)) {
+        this.options.fields.forEach(function(fieldObj){
+          overriderFieldObj[fieldObj.fieldType] = fieldObj;
+        }, this);
+        this._overrideFields(overriderFieldObj);
+      }
     },
 
-    // ====== Helper functions end ======
+    _initDefaultFields: function(){
+      this.fields.text = {
+        fieldType: "text",
+        labelName: "Text",
+        attributes: {
+          required: this._attributeFactory("required"),
+          placeholder: this._attributeFactory("placeholder"),
+          value: this._attributeFactory("value"),
+          maxlength: this._attributeFactory("maxlength"),
+        }
+      };
+      this.fields.dropdown = {
+        fieldType: "dropdown",
+        labelName: "Drop Down",
+        attributes: {
+          required: this._attributeFactory("required"),
+          placeholder: this._attributeFactory("placeholder"),
+          value: this._attributeFactory("value"),
+          options: this._attributeFactory("options"),
+        }
+      };
+      this._addCustomAttributesToFields();
+    },
 
+    _addCustomAttributesToFields: function(){
+      for(var field in this.fields){
+        for(var attributeType in this.attributes){
+          if (!this._isDefaultAttribute(attributeType)) {
+            this.fields[field].attributes[attributeType] = this._attributeFactory(attributeType);
+          }
+        }
+      }
+    },
 
-
-    // ====== General helper functions end ======
+    _overrideFields: function(overriderFieldObj){
+      $.extend(true,this.fields,overriderFieldObj);
+    },
 
     /**
       Detect whether attribute type is default type
@@ -135,7 +183,7 @@
       if (attributeType === "required" || attributeType === "value" ||
           attributeType === "help" || attributeType === "placeholder"
           || attributeType === "maxlength" || attributeType === "max"
-          || attributeType === "min") {
+          || attributeType === "min" || attributeType === "options") {
         return true;
       }
       return false;
@@ -153,6 +201,7 @@
       return true;
     },
 
-    // ====== General helper functions end ======
+    // ====== Helper functions end ======
+
   })
 }(jQuery))
